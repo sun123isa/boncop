@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+
+datasource db {
+  provider = "postgresql"
+  
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+enum Role {
+  ADMIN
+  FREELANCE
+}
+
+enum Status {
+  ATTENTE
+  VALIDATE
+  BANNI
+}
+
+model Metier {
+  id          Int          @id @default(autoincrement())
+  libelle     String       @unique
+  isActif     Boolean      @default(true) @map("is_actif")
+  deletedAt   DateTime?    @map("deleted_at")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  userMetiers UserMetier[]
+
+  @@index([isActif])
+  @@map("metiers")
+}
+
+model Ville {
+  id        Int       @id @default(autoincrement())
+  libelle   String    @unique
+  isActif   Boolean   @default(true) @map("is_actif")
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([isActif])
+  @@map("villes")
+}
+
+model User {
+  id            Int          @id @default(autoincrement())
+  email         String       @unique
+  password      String
+  role          Role
+  nom           String?
+  prenom        String?
+  telephone     String?
+  whatsapp      String?
+  ville         String?
+  quartier      String?
+  cvDescription String?      @map("cv_description") @db.Text
+  profileViews  Int          @default(0) @map("profile_views")
+  validated     Status       @default(ATTENTE)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  userMetiers   UserMetier[]
+
+  @@map("users")
+}
+
+model UserMetier {
+  userId   Int @map("user_id")
+  metierId Int @map("metier_id")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  metier Metier @relation(fields: [metierId], references: [id], onDelete: Cascade)
+
+  @@id([userId, metierId])
+  @@map("user_metier")
+}
