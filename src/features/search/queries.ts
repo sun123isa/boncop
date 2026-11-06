@@ -56,7 +56,7 @@ export async function getSearchOptions(): Promise<SearchOptions> {
     ]);
 
     return {
-      cities: villes.map((ville) => ville.libelle),
+      cities: villes.map((ville: { libelle: string }) => ville.libelle),
       metiers,
     };
   } catch (error) {

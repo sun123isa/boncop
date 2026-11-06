@@ -12,7 +12,7 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    // Utilise DIRECT_URL (le port 5432 de Supabase)
-    url: process.env.DIRECT_URL ?? "",
+    // DIRECT_URL (Supabase :5432) en priorité, sinon DATABASE_URL (Vercel / pooler)
+    url: process.env.DIRECT_URL || process.env.DATABASE_URL || "",
   },
 })
